@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Matemática Extrema</title>
+<style>
+:root{--bg:#0b1020;--card:#171e3a;--tx:#f1f5ff;--mu:#93a0c8;--ac:#f43f8e;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 15% 0,#3b1561,#0b1020 55%) fixed;background-color:var(--bg);color:var(--tx);font:16px system-ui,"Segoe UI",sans-serif;min-height:100vh}
+#app{max-width:1000px;margin:auto;padding:12px}
+h1{font-size:1.6rem;margin:.2em 0}h1 span{color:var(--ac)}h2{font-size:1.05rem;margin:.4em 0}
+.card{background:var(--card);border-radius:16px;padding:14px;margin:10px 0;border:1px solid #2b3560}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.team{border-radius:14px;padding:10px;text-align:center;color:#fff}.team b{font-size:1.8rem;display:block}
+button,input{font:inherit;border-radius:12px;border:2px solid #36427a;background:#0f1530;color:var(--tx);padding:10px 14px}
+button{cursor:pointer;font-weight:700}button:hover{border-color:var(--ac)}button:disabled{opacity:.4;cursor:default}
+.pri{background:var(--ac);border-color:var(--ac);color:#fff}
+.av{display:grid;grid-template-columns:repeat(9,1fr);gap:6px}.av button{padding:2px}.on{border-color:#fff!important;background:var(--ac)!important}
+.face{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;font-size:1.6rem;background:linear-gradient(135deg,#7c3aed,#f43f8e);border:2px solid #fff3}
+.pc{display:flex;gap:8px;align-items:center;background:#0f1530;border-radius:12px;padding:6px 10px;border-left:6px solid}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.opt{display:block;width:100%;margin:8px 0;text-align:left;font-size:1.15rem}
+.q{font-size:1.5rem;font-weight:800;margin:6px 0}.tm{font-size:2.2rem;font-weight:900;color:#fbbf24}
+.mu{color:var(--mu);font-size:.9rem}.ok{color:#4ade80}
+.ph{display:flex;gap:6px;flex-wrap:wrap}.ph span{padding:6px 10px;border-radius:20px;background:#0f1530;border:1px solid #36427a;font-size:.85rem}.ph .cur{background:var(--ac);border-color:#fff}.ph .done{opacity:.5}
+table{width:100%;border-collapse:collapse}td,th{padding:5px;text-align:left;border-bottom:1px solid #2b3560}
+#toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#dc2626;padding:12px 18px;border-radius:14px;font-weight:800;display:none;z-index:9}
+@media(max-width:560px){.av{grid-template-columns:repeat(6,1fr)}h1{font-size:1.25rem}}
+</style></head><body><div id="app"><h1>🔢 MATEMÁTICA <span>EXTREMA</span></h1><div id="v" class="card">Cargando…</div></div><div id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// BANCO: pregunta|A|B|C|D|correcta|nivel(m=media,a=avanzada)  — editable
+const BANK=`Resuelve: 3(x−2)+4=16, x=?|4|6|8|10|1|m
+Resuelve: 2x+8=20, x=?|5|6|7|8|1|m
+Resuelve: 5x−10=25, x=?|5|7|9|3|1|m
+¿Cuánto es el 15% de 240?|24|30|36|40|2|m
+Factoriza: x²−9|(x−3)²|(x+3)²|(x−9)(x+1)|(x−3)(x+3)|3|m
+Soluciones de x²−5x+6=0|1 y 6|2 y 3|−2 y −3|−1 y −6|1|m
+Área de un círculo de radio 5|10π|25π|50π|5π|1|m
+Hipotenusa de un triángulo de catetos 6 y 8|9|10|12|14|1|m
+sen 30° =|√3/2|1/2|1|√2/2|1|m
+Media de 4, 8, 10 y 18|8|9|10|12|2|m
+Si f(x)=2x−3, f(5)=|5|7|10|13|1|m
+Probabilidad de obtener par en un dado|1/6|1/3|1/2|2/3|2|m
+3/4 + 1/6 =|4/10|11/12|5/6|7/12|1|m
+Siguiente término: 2, 6, 18, 54, …|108|162|148|216|1|m
+Sistema x+y=10, x−y=2|(7,3)|(6,4)|(8,2)|(5,5)|1|m
+Perímetro de un rectángulo de 8 por 5|13|26|40|30|1|m
+Desarrolla (x+4)²|x²+16|x²+4x+16|x²+8x+16|x²+8x+8|2|m
+Mediana de 3, 9, 5, 7, 1|5|7|3|9|0|m
+Volumen de un cubo de arista 4|16|48|64|96|2|m
+Si p es verdadero y q falso, p→q es|Verdadero|Falso|Indeterminado|Ambos|1|m
+Un artículo de $150 con 20% de descuento cuesta|130|120|100|125|1|m
+Mayor raíz de 2x²−7x+3=0|1/2|3|−3|7/2|1|a
+Distancia entre (1,2) y (7,10)|8|10|12|14|1|a
+tan 45° + sen 90° =|1|2|√2|0|1|a
+log₂32 + log₃9 =|5|6|7|8|2|a
+Suma 1+2+3+…+50|1250|1275|1300|2550|1|a
+Resuelve 2x+3y=12 y x−y=1|(3,2)|(2,3)|(4,3)|(1,0)|0|a
+Vértice de y=x²−4x+7|(2,3)|(−2,3)|(4,7)|(2,−3)|0|a
+Probabilidad de exactamente 2 caras en 3 lanzamientos|1/4|3/8|1/2|1/8|1|a
+Área de un triángulo equilátero de lado 6|9√3|18|6√3|12√3|0|a`.split("\n").map(l=>{const s=l.split("|");return{t:s[0],o:s.slice(1,5),c:+s[5],l:s[6]}});
+const PH=[{n:"1 · Prueba individual",k:5,m:"i"},{n:"2 · Duelos",k:9,m:"d"},{n:"3 · Desafío grupal",k:2,m:"t"},{n:"4 · Batalla de poderes",k:3,m:"i",pw:1},{n:"5 · Misión secreta",k:1,m:"s"},{n:"6 · Gran final",k:4,m:"i",a:1}];
+const M=BANK.filter(q=>q.l=="m"),A=BANK.filter(q=>q.l=="a");let mi=0,ai=0;const QS=[];
+PH.forEach((p,pi)=>{p.s=QS.length;for(let l=0;l<p.k;l++)QS.push({p:pi,l,q:p.a?A[ai++]:M[mi++]})});
+const TM={r:["Rojo","#dc2626"],a:["Azul","#2563eb"],v:["Verde","#16a34a"]};
+const AV=Array.from("🦊🐼🐯🦁🐸🐙🦄🐲🦉🐧🐨🐵🦈🐺🦖🐝🦋🐢🐬🦅🐻🐰🐮🐷🦝🦩🐞");
+const COST={D:2,E:2,R:4},NM={D:"⚡ Descarga −100",E:"🛡️ Escudo",R:"🧲 Robo 100",S:"🕵️ Sabotaje −200"};
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const lim=l=>l=="a"?40:25,el=(p,i)=>PH[QS[i].p].m!="d"||p.slot==Math.floor(QS[i].l/3);
+const face=i=>`<span class="face">${AV[i]}</span>`;
+const toast=m=>{const t=$("toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",4000)};
+const qs=new URLSearchParams(location.search);
+// ---------- LÓGICA DE PUNTOS (la usa el docente) ----------
+function calc(G){const T={r:{s:0,c:0,sp:0,mis:0},a:{s:0,c:0,sp:0,mis:0},v:{s:0,c:0,sp:0,mis:0}},pp={},cr={},ids=Object.keys(G.pl);ids.forEach(i=>{pp[i]=0;cr[i]=0});
+ for(let i=0;i<=G.qi;i++){if(i==G.qi&&G.open)break;const x=QS[i],m=PH[x.p].m,An=G.a[i]||{};
+  const ok=ids.filter(id=>An[id]&&An[id].k===x.q.c&&el(G.pl[id],i)).sort((u,w)=>An[u].t-An[w].t),mu=x.q.l=="a"?2:1;
+  ok.forEach((id,j)=>{const tm=G.pl[id].team;T[tm].c++;cr[id]++;if(m=="s")T[tm].mis=1;else if(m=="i"||m=="d"){const v=m=="d"?[300,200,100][Math.min(j,2)]*mu:100*mu;pp[id]+=v;T[tm].s+=v}});
+  if(m=="t")Object.keys(T).forEach(k=>{if(ok.filter(id=>G.pl[id].team==k).length>=2)T[k].s+=400})}
+ const sh={r:0,a:0,v:0};
+ G.fx.filter(f=>!f.v).sort((x,y)=>x.ts-y.ts).forEach(f=>{T[f.from].sp+=COST[f.type]||0;if(f.type=="E")sh[f.from]++;else if(sh[f.to]>0)sh[f.to]--;else{const d=f.type=="S"?200:100;T[f.to].s=Math.max(0,T[f.to].s-d);if(f.type=="R")T[f.from].s+=100}});
+ Object.values(T).forEach(t=>t.k=Math.floor(t.c/2)-t.sp);return{T,pp,cr,sh}}
+function board(P){return`<div class="g3">${Object.keys(TM).map(k=>`<div class="team" style="background:${TM[k][1]}">${TM[k][0]}<b>${P.T[k].s}</b>🪙 ${P.T[k].k}${P.sh[k]?" · 🛡️"+P.sh[k]:""}<div>${Object.values(P.pl).filter(p=>p.team==k).map(p=>AV[p.av]).join(" ")}</div></div>`).join("")}</div>`}
+function qhtml(P,mine,host){const x=P.q;if(P.fin)return`<h2>🏆 Partida terminada</h2>`;if(!x)return`<h2>⏳ ${P.ph<0?"Esperando que el docente inicie la primera fase…":"Fase en curso: espera la siguiente pregunta"}</h2>`;
+ const ph=PH[x.pi],a=mine[P.qi],r=P.open?0:1;
+ let h=`<div class="row"><span class="mu">${ph.n} · pregunta ${x.l2+1}/${ph.k} · ${x.l=="a"?"🔥 Avanzada ×2":"Media"}</span><span class="tm" id="tm"></span></div>${ph.m=="d"?`<div class="mu">⚔️ Duelo ${Math.floor(x.l2/3)+1}: responden los jugadores nº ${Math.floor(x.l2/3)+1} de cada equipo</div>`:""}${ph.m=="t"?`<div class="mu">👥 El equipo gana 400 si al menos 2 aciertan</div>`:""}<div class="q">${esc(x.t)}</div>`;
+ x.o.forEach((o,i)=>h+=`<button class="opt" data-a="${i}" ${(host||r||a!=null)?"disabled":""} style="${r&&i==x.c?"border-color:#4ade80":a==i?"border-color:#fbbf24":""}">${"ABCD"[i]}) ${esc(o)}</button>`);
+ if(P.open)h+=host?`<p class="mu">Respondieron ${P.ans.length} jugador(es)</p>`:a!=null?`<p class="ok">✔ Enviada. El resultado se revela al cerrar.</p>`:"";
+ else h+=`<p>✅ Correcta: <b>${esc(x.o[x.c])}</b></p>`;return h}
+// ---------- DOCENTE ----------
+function host(){sessionStorage.mxh=1;
+ const code=localStorage.mxc||(localStorage.mxc=Array.from({length:4},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.random()*24|0]).join(""));
+ let G;try{G=JSON.parse(localStorage.mxG)}catch(e){}if(!G||G.code!=code)G={code,ph:-1,qi:-1,open:false,t0:0,pl:{},a:{},fx:[],pw:true};
+ Object.values(G.pl).forEach(p=>p.on=false);const conns={};let peer;
+ const link=location.href.split("?")[0]+"?c="+code,fin=()=>G.ph>=PH.length;
+ const pub=()=>{const C=calc(G),x=QS[G.qi],rv=x&&!G.open;return{code,ph:G.ph,qi:G.qi,open:G.open,rem:x?lim(x.q.l)-(Date.now()-G.t0)/1000:0,pl:G.pl,T:C.T,sh:C.sh,pw:G.pw,fin:fin(),ans:Object.keys(G.a[G.qi]||{}),
+  q:x&&G.ph>=0&&!fin()?{t:x.q.t,o:x.q.o,l:x.q.l,c:rv?x.q.c:-1,pi:x.p,l2:x.l}:null,fx:G.fx.filter(f=>!f.v).map(f=>({id:f.id,type:f.type,to:f.to,from:f.type=="E"?f.from:null}))}};
+ const sync=()=>{localStorage.mxG=JSON.stringify(G);const m=pub();Object.values(conns).forEach(c=>c.open&&c.send(m));render()};
+ function tryFx(pid,type,to){const pl=G.pl[pid];if(!pl||!TM[to])return"Jugador desconocido";const C=calc(G),tm=pl.team,p=PH[G.ph];
+  if(to==tm&&type!="E")return"No puedes atacar a tu equipo";
+  if(type=="S"){if(!p||p.m!="s"||!C.T[tm].mis||G.fx.some(f=>f.from==tm&&f.type=="S"&&!f.v))return"Sabotaje no disponible"}
+  else{if(!G.pw||!p||!p.pw)return"Los poderes no están habilitados ahora";if(C.T[tm].k<COST[type])return"Fichas insuficientes";if(type=="R"&&G.fx.some(f=>f.from==tm&&f.type=="R"&&!f.v))return"El robo solo se usa una vez"}
+  if(type!="E"){if(G.fx.filter(f=>f.to==to&&f.ph==G.ph&&f.type!="E"&&!f.v).length>=2)return"Ese equipo ya recibió 2 ataques en esta fase";const l=G.fx.slice().reverse().find(f=>f.from==tm&&f.type!="E"&&!f.v);if(l&&l.to==to&&l.ph==G.ph)return"No dos ataques seguidos al mismo equipo"}
+  G.fx.push({id:Date.now()+""+Math.random().toString(36).slice(2,5),ts:Date.now(),from:tm,to:type=="E"?tm:to,type,ph:G.ph});return""}
+ function onMsg(c,m){
+  if(m.t=="join"){const pid=m.pid,ex=G.pl[pid];if(!ex){const tm=Object.values(G.pl).filter(p=>p.team==m.team);if(tm.length>=3||!TM[m.team]){c.send({t:"no",m:"Equipo lleno"});return}
+    G.pl[pid]={n:String(m.n).slice(0,16),team:m.team,av:m.av|0,slot:[0,1,2].find(s=>!tm.some(p=>p.slot==s)),on:true}}else ex.on=true;c.pid=pid;conns[pid]=c;sync()}
+  else if(m.t=="ans"&&c.pid&&G.open){const p=G.pl[c.pid],i=G.qi;if(!p||!el(p,i))return;const a=G.a[i]||(G.a[i]={});if(a[c.pid]||Date.now()-G.t0>lim(QS[i].q.l)*1000+1500)return;a[c.pid]={k:m.k|0,t:Date.now()-G.t0};sync()}
+  else if(m.t=="fx"&&c.pid){const e=tryFx(c.pid,m.type,m.to);if(e)c.send({t:"no",m:e});else sync()}}
+ function start(){peer=new Peer("mx-"+code);peer.on("error",e=>{if(e.type=="unavailable-id"){setTimeout(start,3000);$("v").innerHTML="Reconectando la sala…"}else if(e.type!="peer-unavailable")toast("Conexión: "+e.type)});
+  peer.on("open",()=>{render();setTimeout(()=>{const q=$("qr");if(q&&window.QRCode&&!q.firstChild)new QRCode(q,{text:link,width:150,height:150})},100)});
+  peer.on("connection",c=>{c.on("data",m=>onMsg(c,m));c.on("open",()=>c.send(pub()));c.on("close",()=>{if(c.pid&&G.pl[c.pid]&&conns[c.pid]===c){G.pl[c.pid].on=false;sync()}})})}
+ function act(id,d){const x=QS[G.qi],ph=G.ph;
+  if(id=="ph"){G.ph++;G.open=false}
+  else if(id=="nq"){G.qi++;G.open=true;G.t0=Date.now()}
+  else if(id=="cl")G.open=false;
+  else if(id=="pw")G.pw=!G.pw;
+  else if(id=="vx"){const f=G.fx.find(f=>f.id==d);if(f)f.v=1}
+  else if(id=="kick"){delete G.pl[d];if(conns[d]){conns[d].close();delete conns[d]}}
+  else if(id=="rs"){if(!confirm("¿Reiniciar toda la partida?"))return;G={code,ph:-1,qi:-1,open:false,t0:0,pl:{},a:{},fx:[],pw:true}}
+  else if(id=="csv"){const C=calc(G),r=[["Jugador","Equipo","Aciertos","Puntos individuales"]].concat(Object.keys(G.pl).map(i=>[G.pl[i].n,TM[G.pl[i].team][0],C.cr[i],C.pp[i]])),b=new Blob(["\ufeff"+r.map(x=>x.join(";")).join("\n")],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="resultados-matematica-extrema.csv";a.click();return}
+  sync()}
+ function render(){const C=calc(G),P=pub(),ids=Object.keys(G.pl),last=G.ph>=0&&G.ph<PH.length?PH[G.ph].s+PH[G.ph].k-1:-1,phEnd=G.ph>=0&&G.qi==last&&!G.open;
+  const canNQ=G.ph>=0&&!fin()&&!G.open&&G.qi<last,canPh=!G.open&&!fin()&&(G.ph<0||phEnd);
+  const rank=ids.sort((a,b)=>C.pp[b]-C.pp[a]);
+  $("v").innerHTML=`<div class="row"><b>Sala:</b><span class="tm" style="color:#fff">${code}</span><div id="qr"></div><div class="mu">Los estudiantes abren<br><b>${esc(link)}</b><br>o entran con el código</div></div>
+  <div class="ph">${PH.map((p,i)=>`<span class="${i==G.ph?"cur":i<G.ph?"done":""}">${p.n}</span>`).join("")}</div>
+  <div class="row" style="margin-top:10px"><button class="pri" data-h="ph" ${canPh?"":"disabled"}>▶ ${G.ph+1<PH.length?"Iniciar fase: "+PH[G.ph+1].n:"Mostrar resultados"}</button><button class="pri" data-h="nq" ${canNQ?"":"disabled"}>❓ Lanzar pregunta</button><button data-h="cl" ${G.open?"":"disabled"}>⏹ Cerrar y revelar</button><button data-h="pw">Poderes: ${G.pw?"ON":"OFF"}</button><button data-h="csv">⬇ CSV</button><button data-h="rs">♻ Reiniciar</button></div>
+  <div class="card">${qhtml(P,{},true)}</div>${board(P)}
+  <div class="card"><h2>👥 Jugadores conectados (${ids.length}/9)</h2><div class="g3">${ids.map(i=>{const p=G.pl[i];return`<div class="pc" style="border-color:${TM[p.team][1]}">${face(p.av)}<div><b>${esc(p.n)}</b><br><span class="mu"><span class="dot" style="background:${p.on?"#4ade80":"#f87171"}"></span> ${TM[p.team][0]} · nº${p.slot+1}</span></div><button data-h="kick" data-d="${i}" style="margin-left:auto;padding:2px 8px">✕</button></div>`}).join("")||"<span class=mu>Aún no entra nadie</span>"}</div></div>
+  <div class="card"><h2>📊 Puntuación individual</h2><table><tr><th>#</th><th>Jugador</th><th>Equipo</th><th>Aciertos</th><th>Puntos</th></tr>${rank.map((i,n)=>`<tr><td>${n+1}</td><td>${AV[G.pl[i].av]} ${esc(G.pl[i].n)}</td><td>${TM[G.pl[i].team][0]}</td><td>${C.cr[i]}</td><td>${C.pp[i]}</td></tr>`).join("")}</table><p class="mu">La nota académica usa solo estos puntos propios; ataques y escudos afectan solo el marcador de equipo.</p></div>
+  <div class="card"><h2>🕵️ Ataques (anula los injustos)</h2>${G.fx.map(f=>`<div ${f.v?'style="opacity:.4;text-decoration:line-through"':""}>${NM[f.type]}: ${TM[f.from][0]} → ${TM[f.to][0]} ${f.v?"":`<button data-h="vx" data-d="${f.id}" style="padding:2px 8px">Anular</button>`}</div>`).join("")||"<span class=mu>Sin ataques</span>"}</div>`;
+  const q=$("qr");if(q&&window.QRCode&&!q.firstChild)new QRCode(q,{text:link,width:150,height:150});tick()}
+ function tick(){const e=$("tm");if(!e||!G.open)return;const r=Math.ceil(lim(QS[G.qi].q.l)-(Date.now()-G.t0)/1000);e.textContent="⏱ "+Math.max(r,0);if(r<=-1)act("cl")}
+ document.addEventListener("click",e=>{const b=e.target.closest("button[data-h]");if(b)act(b.dataset.h,b.dataset.d)});setInterval(tick,500);start();render()}
+// ---------- ESTUDIANTE ----------
+function student(code){
+ let P=null,peer,conn,recv=0,pid=localStorage["mx_"+code]||(localStorage["mx_"+code]=Math.random().toString(36).slice(2)),mine={},pick={av:0,team:"r"},seen=new Set(),first=true,joined=false;
+ const me=()=>P&&P.pl[pid];
+ function connect(){if(peer)peer.destroy();peer=new Peer();peer.on("open",()=>{conn=peer.connect("mx-"+code,{reliable:true});
+  conn.on("open",()=>{if(localStorage["mx_n_"+code]){const j=JSON.parse(localStorage["mx_n_"+code]);conn.send({t:"join",pid,...j})}});
+  conn.on("data",m=>{if(m.t=="no")return toast(m.m);P=m;recv=Date.now();
+   (P.fx||[]).forEach(f=>{if(!seen.has(f.id)){seen.add(f.id);if(!first&&me()&&f.to==me().team&&f.type!="E"&&f.from==null)toast("⚠️ ¡Tu equipo recibió un ataque!")}});first=false;render()});
+  conn.on("close",()=>{$("v").innerHTML="Reconectando…";setTimeout(connect,2500)})});
+  peer.on("error",e=>{if(!P)$("v").innerHTML='<h2>No se encuentra la sala '+code+'</h2><p class="mu">Revisa el código (4 letras) y que el panel del docente esté abierto. Reintentando…</p><button onclick="location.search=\'\'">Cambiar código</button>';setTimeout(connect,3000)})}
+ function render(){const v=$("v");if(!P){v.textContent="Conectando con la sala "+code+"…";return}const m=me();
+  if(!m){const cnt=k=>Object.values(P.pl).filter(p=>p.team==k).length;
+   v.innerHTML=`<h2>Sala ${code}: crea tu jugador</h2><input id="nm" placeholder="Tu nombre" maxlength="16"><h2>Equipo</h2><div class="row">${Object.keys(TM).map(k=>`<button data-t="${k}" ${cnt(k)>=3?"disabled":""} style="background:${TM[k][1]};${pick.team==k?"border-color:#fff":""}">${TM[k][0]} (${cnt(k)}/3)</button>`).join("")}</div><h2>Avatar (27)</h2><div class="av">${AV.map((a,i)=>`<button data-v="${i}" class="${pick.av==i?"on":""}">${face(i)}</button>`).join("")}</div><p><button class="pri" id="go">¡Entrar!</button></p>`;return}
+  const k=P.T[m.team].k,ph=P.q&&PH[P.q.pi],ok=ph&&ph.m=="s"&&P.T[m.team].mis;
+  v.innerHTML=`<div class="row">${face(m.av)}<b>${esc(m.n)}</b><span class="team" style="background:${TM[m.team][1]};padding:4px 12px">${TM[m.team][0]}</span></div><div class="card">${qhtml(P,mine,false)}</div>`+
+  (P.fin?"":`<div class="card"><h2>⚔️ Poderes · 🪙 ${k} fichas <span class="mu">(1 ficha cada 2 aciertos del equipo)</span></h2>${P.pw&&ph&&ph.pw||ok?`<div class="row">${Object.keys(TM).filter(x=>x!=m.team).map(x=>`<span class="mu">Objetivo:</span><button data-tg="${x}" class="${(pick.tg||Object.keys(TM).find(y=>y!=m.team))==x?"on":""}">${TM[x][0]}</button>`).join("")}</div><div class="row" style="margin-top:8px">${ok?`<button data-p="S">${NM.S}</button>`:Object.keys(COST).map(t=>`<button data-p="${t}" ${k<COST[t]?"disabled":""}>${NM[t]} · ${COST[t]}🪙</button>`).join("")}</div>`:`<span class="mu">Los poderes se habilitan en la Batalla de poderes.</span>`}</div>`)+board(P);tick()}
+ function tick(){const e=$("tm");if(!e||!P||!P.open)return;e.textContent="⏱ "+Math.max(Math.ceil(P.rem-(Date.now()-recv)/1000),0)}
+ document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const d=b.dataset;
+  if(d.t){pick.team=d.t;render()}else if(d.v){pick.av=+d.v;render()}else if(d.tg){pick.tg=d.tg;render()}
+  else if(b.id=="go"){const n=$("nm").value.trim();if(!n)return $("nm").focus();const j={n,team:pick.team,av:pick.av};localStorage["mx_n_"+code]=JSON.stringify(j);conn.send({t:"join",pid,...j})}
+  else if(d.a!=null&&P.open&&mine[P.qi]==null){mine[P.qi]=+d.a;conn.send({t:"ans",k:+d.a});render()}
+  else if(d.p){conn.send({t:"fx",type:d.p,to:pick.tg||Object.keys(TM).find(y=>y!=me().team)})}});
+ setInterval(tick,500);connect();render()}
+// ---------- INICIO ----------
+if(qs.get("c"))student(qs.get("c").trim().toUpperCase());
+else{$("v").innerHTML=`<h2>🎮 Estudiante: escribe el código de la sala</h2><div class="row"><input id="cd" placeholder="Código" maxlength="4" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase;font-size:1.6rem;width:150px;text-align:center"><button class="pri" id="bs">Entrar</button></div><hr style="border-color:#2b3560;margin:18px 0"><button id="bt">👩‍🏫 Soy docente (crear sala)</button>`;
+ const go=()=>{const c=$("cd").value.trim().toUpperCase();if(c.length==4)location.search="?c="+c;else{$("cd").focus();toast("El código tiene 4 letras")}};
+ $("bs").onclick=go;$("cd").onkeydown=e=>{if(e.key=="Enter")go()};
+ $("bt").onclick=()=>{sessionStorage.mxh=1;host()};
+ if(sessionStorage.mxh==1)host()}
+</script></body></html>
